@@ -1,26 +1,20 @@
 package br.ucsal;
 
-public class Match {
+public class Match extends Thread {
     private final String WHITE_PLAYER = "White";
     private final String BLACK_PLAYER = "Black";
     private long time = 600;
     private Clock whiteClock = new Clock(time, WHITE_PLAYER);
     private Clock blackClock = new Clock(time, BLACK_PLAYER);
+    private MatchCounter matchCounter = new MatchCounter();
 
-    public void start() {
+    @Override
+    public void run() {
         whiteClock.start();
-        blackClock.start();
-        whiteClock.isAlive();
-        blackClock.isAlive();
         System.out.println("Begin!");
-        while (true) {
+        while (whiteClock.hasTimeLeft() && blackClock.hasTimeLeft()) {
 
             playTurn(whiteClock);
-
-            if (whiteClock.isExpired() || blackClock.isExpired()) {
-                break;
-            }
-
             playTurn(blackClock);
             System.out.println("Black -> " + blackClock.getTimeLeft());
             System.out.println("White -> " + whiteClock.getTimeLeft());
@@ -30,11 +24,13 @@ public class Match {
     }
 
     private void playTurn(Clock clock) {
+
         System.out.println("Play -> " + clock.getPlayerName());
         try {
             if (clock.getPlayerName().equals(BLACK_PLAYER)) {
                 whiteClock.wait();
-                blackClock.notify();
+                if(!clock.isAlive()) clock.start();
+                else blackClock.notify();
             } else {
                 blackClock.wait();
                 whiteClock.notify();
@@ -43,8 +39,15 @@ public class Match {
 
          }
     }
-
-
+    public synchronized void whitePlayed() {
+        try{
+            if (!blackClock.isAlive()) blackClock.start();
+            else {
+                whiteClock.wait();
+                blackClock.notify();
+            }
+        } catch (Exception e){}
+    }
     private void stopClocks() {
         whiteClock.interrupt();
         blackClock.interrupt();

@@ -14,19 +14,21 @@ public class Clock extends Thread  {
 
     @Override
     public void run() {
-        while (!this.isExpired()) {
+
+        while (this.hasTimeLeft()) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             timeLeft -= 1;
-            if(timeLeft==0) this.expired = true;
             System.err.println(playerName + " -> " + timeLeft);
         }
 
     }
-
+    public boolean hasTimeLeft() {
+        return this.timeLeft > 0 ;
+    }
     public long getTimeLeft() {
         return timeLeft;
     }
