@@ -14,33 +14,48 @@ public class Match {
         Swing gui = new Swing();
         gui.startUI();
         matchTimer = new MatchTimer(gui,blackClock,whiteClock);
-        matchTimer.start();
+
+        gui.getButton1().addActionListener(e -> whitePlayed());
+        gui.getButton2().addActionListener(e -> blackPlayed());
+
     }
 
 
     public void whitePlayed() {
-        try{
-            if (!blackClock.isAlive()) {
-                matchTimer.start();
-                blackClock.start();
-            }
-            else {
-                whiteClock.wait();
-                blackClock.notify();
-            }
-        } catch (Exception ignored){
+        System.out.println("white");
+        System.out.println(blackClock.getState());
+        try {
+
+                if (!blackClock.isAlive()) {
+                    matchTimer.start();
+                    blackClock.start();
+                } else {
+                    synchronized (whiteClock) {whiteClock.wait();}
+                    synchronized (blackClock)  {blackClock.notify();}
+                }
+
+        } catch (Exception ignored) {
+            // Handle the exception appropriately
         }
     }
 
-    public void blackPlayed(){
-        try{
-            if(!whiteClock.isAlive()) whiteClock.start();
-            blackClock.wait();
-            whiteClock.notify();
-        } catch (Exception ignored){
+    public void blackPlayed() {
+        System.out.println("black");
+        System.out.println(whiteClock.getState());
+        try {
+
+                if (!whiteClock.isAlive()) {
+                    whiteClock.start();
+                    synchronized (blackClock) { blackClock.wait();}
+                } else {
+                    synchronized (blackClock) { blackClock.wait();}
+                    synchronized (whiteClock) {  whiteClock.notify();}
+                }
+
+        } catch (Exception ignored) {
+            // Handle the exception appropriately
         }
     }
-
 
     public String getWhiteClockTime(){
         return Utils.formatTime(whiteClock.getTimeLeft());

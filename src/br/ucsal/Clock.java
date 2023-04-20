@@ -19,7 +19,6 @@ public class Clock extends Thread  {
 
         while (this.hasTimeLeft()) {
             try {
-                System.out.println(this.playerName + " -> " + this.timeLeft);
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();

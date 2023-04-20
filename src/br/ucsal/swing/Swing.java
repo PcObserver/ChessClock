@@ -9,6 +9,7 @@ import java.awt.*;
 public class Swing extends JFrame {
 
     private JLabel player1, player2, player1timer, player2timer;
+
     private JButton button1, button2;
 
 
@@ -78,6 +79,21 @@ public class Swing extends JFrame {
         // create buttons
         button1 = new JButton("Terminar minha jogada!");
         button2 = new JButton("Terminar minha jogada!");
+    }
+    public JButton getButton1() {
+        return button1;
+    }
+
+    public void setButton1(JButton button1) {
+        this.button1 = button1;
+    }
+
+    public JButton getButton2() {
+        return button2;
+    }
+
+    public void setButton2(JButton button2) {
+        this.button2 = button2;
     }
 
 }
