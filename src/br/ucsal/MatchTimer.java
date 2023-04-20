@@ -1,6 +1,6 @@
 package br.ucsal;
 
-public class MatchCounter extends Thread {
+public class MatchTimer extends Thread {
     private long matchTime = 0;
 
     @Override

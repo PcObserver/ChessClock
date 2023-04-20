@@ -1,5 +1,7 @@
 package br.ucsal.swing;
 
+import br.ucsal.Match;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -8,7 +10,7 @@ public class Swing extends JFrame {
     private JLabel player1, player2, player1timer, player2timer;
     private JButton button1, button2;
 
-    public Swing() {
+    public Swing(Match match) {
         setTitle("XADRAS DA GALERA");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 200);
@@ -45,10 +47,14 @@ public class Swing extends JFrame {
 
         // create buttons logic
         button1.addActionListener(e -> {
+            match.whitePlayed();
+            updatePlayerOneTimer(match.getWhiteClockTime());
             button1.setEnabled(false);
             button2.setEnabled(true);
         });
         button2.addActionListener(e -> {
+            match.blackPlayed();
+            updatePlayerTwoTimer(match.getBlackClockTime());
             button2.setEnabled(false);
             button1.setEnabled(true);
         });

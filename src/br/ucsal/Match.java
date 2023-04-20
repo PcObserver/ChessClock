@@ -6,16 +6,14 @@ public class Match extends Thread {
     private long time = 600;
     private Clock whiteClock = new Clock(time, WHITE_PLAYER);
     private Clock blackClock = new Clock(time, BLACK_PLAYER);
-    private MatchCounter matchCounter = new MatchCounter();
+    private MatchTimer matchTimer = new MatchTimer();
 
     @Override
     public void run() {
-        whiteClock.start();
+
         System.out.println("Begin!");
         while (whiteClock.hasTimeLeft() && blackClock.hasTimeLeft()) {
 
-            playTurn(whiteClock);
-            playTurn(blackClock);
             System.out.println("Black -> " + blackClock.getTimeLeft());
             System.out.println("White -> " + whiteClock.getTimeLeft());
         }
@@ -23,31 +21,31 @@ public class Match extends Thread {
         determineWinner();
     }
 
-    private void playTurn(Clock clock) {
 
-        System.out.println("Play -> " + clock.getPlayerName());
-        try {
-            if (clock.getPlayerName().equals(BLACK_PLAYER)) {
-                whiteClock.wait();
-                if(!clock.isAlive()) clock.start();
-                else blackClock.notify();
-            } else {
-                blackClock.wait();
-                whiteClock.notify();
-            }
-        }catch (Exception e){
-
-         }
-    }
-    public synchronized void whitePlayed() {
+    public void whitePlayed() {
         try{
-            if (!blackClock.isAlive()) blackClock.start();
+            if (!blackClock.isAlive()) {
+                matchTimer.start();
+                blackClock.start();
+            }
             else {
                 whiteClock.wait();
                 blackClock.notify();
             }
+        } catch (Exception e){
+            System.err.println(e);
+        }
+    }
+
+    public void blackPlayed(){
+        try{
+            if(!whiteClock.isAlive()) whiteClock.start();
+            blackClock.wait();
+            whiteClock.notify();
         } catch (Exception e){}
     }
+
+
     private void stopClocks() {
         whiteClock.interrupt();
         blackClock.interrupt();
@@ -61,4 +59,10 @@ public class Match extends Thread {
         }
     }
 
+    public String getWhiteClockTime(){
+        return Utils.formatTime(whiteClock.getTimeLeft());
+    }
+    public String getBlackClockTime(){
+        return Utils.formatTime(blackClock.getTimeLeft());
+    }
 }
