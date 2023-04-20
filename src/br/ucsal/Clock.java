@@ -1,5 +1,7 @@
 package br.ucsal;
 
+import br.ucsal.swing.Swing;
+
 public class Clock extends Thread  {
 
     private long timeLeft;
@@ -17,12 +19,12 @@ public class Clock extends Thread  {
 
         while (this.hasTimeLeft()) {
             try {
+                System.out.println(this.playerName + " -> " + this.timeLeft);
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             timeLeft -= 1;
-            System.err.println(playerName + " -> " + timeLeft);
         }
 
     }
@@ -36,7 +38,6 @@ public class Clock extends Thread  {
     public String getPlayerName() {
         return playerName;
     }
-
 
     public boolean isExpired() {
         return expired;

@@ -1,24 +1,20 @@
 package br.ucsal;
 
-public class Match extends Thread {
+import br.ucsal.swing.Swing;
+
+public class Match {
     private final String WHITE_PLAYER = "White";
     private final String BLACK_PLAYER = "Black";
     private long time = 600;
     private Clock whiteClock = new Clock(time, WHITE_PLAYER);
     private Clock blackClock = new Clock(time, BLACK_PLAYER);
-    private MatchTimer matchTimer = new MatchTimer();
+    private MatchTimer matchTimer;
 
-    @Override
-    public void run() {
-
-        System.out.println("Begin!");
-        while (whiteClock.hasTimeLeft() && blackClock.hasTimeLeft()) {
-
-            System.out.println("Black -> " + blackClock.getTimeLeft());
-            System.out.println("White -> " + whiteClock.getTimeLeft());
-        }
-        stopClocks();
-        determineWinner();
+    public Match(){
+        Swing gui = new Swing();
+        gui.startUI();
+        matchTimer = new MatchTimer(gui,blackClock,whiteClock);
+        matchTimer.start();
     }
 
 
@@ -32,8 +28,7 @@ public class Match extends Thread {
                 whiteClock.wait();
                 blackClock.notify();
             }
-        } catch (Exception e){
-            System.err.println(e);
+        } catch (Exception ignored){
         }
     }
 
@@ -42,22 +37,10 @@ public class Match extends Thread {
             if(!whiteClock.isAlive()) whiteClock.start();
             blackClock.wait();
             whiteClock.notify();
-        } catch (Exception e){}
-    }
-
-
-    private void stopClocks() {
-        whiteClock.interrupt();
-        blackClock.interrupt();
-    }
-
-    private void determineWinner() {
-        if (whiteClock.isExpired()) {
-            System.out.println("Black wins on time");
-        } else if (blackClock.isExpired()) {
-            System.out.println("White wins on time");
+        } catch (Exception ignored){
         }
     }
+
 
     public String getWhiteClockTime(){
         return Utils.formatTime(whiteClock.getTimeLeft());

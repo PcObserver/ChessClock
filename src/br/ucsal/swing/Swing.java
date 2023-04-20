@@ -1,5 +1,6 @@
 package br.ucsal.swing;
 
+import br.ucsal.Clock;
 import br.ucsal.Match;
 
 import javax.swing.*;
@@ -10,26 +11,27 @@ public class Swing extends JFrame {
     private JLabel player1, player2, player1timer, player2timer;
     private JButton button1, button2;
 
-    public Swing(Match match) {
+
+
+    public Swing() {
+    }
+
+    public void updatePlayerOneTimer(String time) {
+        player1timer.setText(time);
+    }
+    public void updatePlayerTwoTimer(String time) {
+        player2timer.setText(time);
+    }
+
+    private void setupUI() {
         setTitle("XADRAS DA GALERA");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 200);
         setLocationRelativeTo(null);
-
-        // create text fields
-        player1 = new JLabel("Jogador Branco");
-        player1timer = new JLabel();
-        player1timer.setHorizontalAlignment(JLabel.CENTER);
-        player1.setHorizontalAlignment(JLabel.CENTER);
-        player2 = new JLabel("Jogador Preto");
-        player2timer = new JLabel();
-        player2timer.setHorizontalAlignment(JLabel.CENTER);
-        player2.setHorizontalAlignment(JLabel.CENTER);
-
-
-        // create buttons
-        button1 = new JButton("Terminar minha jogada!");
-        button2 = new JButton("Terminar minha jogada!");
+    }
+    public void startUI() {
+        setupUI();
+        createElements();
 
         // create panel to hold components
         JPanel panel = new JPanel(new GridLayout(2, 2));
@@ -37,7 +39,6 @@ public class Swing extends JFrame {
         panel.add(player2);
         panel.add(player1timer);
         panel.add(player2timer);
-
         // create panel to hold buttons
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.add(button1);
@@ -47,14 +48,10 @@ public class Swing extends JFrame {
 
         // create buttons logic
         button1.addActionListener(e -> {
-            match.whitePlayed();
-            updatePlayerOneTimer(match.getWhiteClockTime());
             button1.setEnabled(false);
             button2.setEnabled(true);
         });
         button2.addActionListener(e -> {
-            match.blackPlayed();
-            updatePlayerTwoTimer(match.getBlackClockTime());
             button2.setEnabled(false);
             button1.setEnabled(true);
         });
@@ -68,10 +65,19 @@ public class Swing extends JFrame {
         setVisible(true);
     }
 
-    public void updatePlayerOneTimer(String time) {
-        player1timer.setText(time);
+    private void createElements() {
+        // create text fields
+        player1 = new JLabel("Jogador Branco");
+        player1.setHorizontalAlignment(JLabel.CENTER);
+        player1timer = new JLabel();
+        player1timer.setHorizontalAlignment(JLabel.CENTER);
+        player2 = new JLabel("Jogador Preto");
+        player2.setHorizontalAlignment(JLabel.CENTER);
+        player2timer = new JLabel();
+        player2timer.setHorizontalAlignment(JLabel.CENTER);
+        // create buttons
+        button1 = new JButton("Terminar minha jogada!");
+        button2 = new JButton("Terminar minha jogada!");
     }
-    public void updatePlayerTwoTimer(String time) {
-        player2timer.setText(time);
-    }
+
 }
