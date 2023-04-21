@@ -3,64 +3,81 @@ package br.ucsal;
 import br.ucsal.swing.Swing;
 
 public class Match {
+    private static final long MATCH_DURATION = 300;
     private final String WHITE_PLAYER = "White";
     private final String BLACK_PLAYER = "Black";
-    private long time = 600;
-    private Clock whiteClock = new Clock(time, WHITE_PLAYER);
-    private Clock blackClock = new Clock(time, BLACK_PLAYER);
+    private Clock whiteClock = new Clock(MATCH_DURATION, WHITE_PLAYER);
+    private Clock blackClock = new Clock(MATCH_DURATION, BLACK_PLAYER);
     private MatchTimer matchTimer;
 
-    public Match(){
+    private Clock lastRunning = whiteClock;
+
+    public Match() {
         Swing gui = new Swing();
         gui.startUI();
-        matchTimer = new MatchTimer(gui,blackClock,whiteClock);
+        matchTimer = new MatchTimer(gui, blackClock, whiteClock);
 
-        gui.getButton1().addActionListener(e -> whitePlayed());
-        gui.getButton2().addActionListener(e -> blackPlayed());
+        gui.getPlayer1Button().addActionListener(e -> whitePlayed());
+        gui.getPlayer2Button().addActionListener(e -> blackPlayed());
+        gui.getGameStateButton().addActionListener(e -> {
+            if (gui.getGameStateButton().getText().equals("Começar!")) {
+                gameStart();
+            }else if (gui.getGameStateButton().getText().equals("Recomeçar!")) {
+                gameReset(gui);
+                gameStart();
+            } else {
+                matchTimer.suspend();
+                lastRunning.suspend();
+            }
+        });
+        gui.getResumeButton().addActionListener(e -> {
+            matchTimer.resume();
+            lastRunning.resume();
+        });
+        gui.getResetButton().addActionListener(e -> {
+            gameReset(gui);
+        });
+    };
 
+    public void gameReset(Swing gui) {
+        whiteClock = new Clock(MATCH_DURATION, WHITE_PLAYER);
+        blackClock = new Clock(MATCH_DURATION, BLACK_PLAYER);
+        matchTimer = new MatchTimer(gui, blackClock, whiteClock);
+        gui.resetFields();
     }
-
-
     public void whitePlayed() {
-        System.out.println("white");
-        System.out.println(blackClock.getState());
         try {
 
-                if (!blackClock.isAlive()) {
-                    matchTimer.start();
-                    blackClock.start();
-                } else {
-                    synchronized (whiteClock) {whiteClock.wait();}
-                    synchronized (blackClock)  {blackClock.notify();}
-                }
+            if (!blackClock.isAlive()) {
+                whiteClock.suspend();
+                blackClock.start();
+            } else {
+                whiteClock.suspend();
+                blackClock.resume();
+            }
 
+            lastRunning = blackClock;
         } catch (Exception ignored) {
-            // Handle the exception appropriately
         }
     }
 
     public void blackPlayed() {
-        System.out.println("black");
-        System.out.println(whiteClock.getState());
         try {
 
-                if (!whiteClock.isAlive()) {
-                    whiteClock.start();
-                    synchronized (blackClock) { blackClock.wait();}
-                } else {
-                    synchronized (blackClock) { blackClock.wait();}
-                    synchronized (whiteClock) {  whiteClock.notify();}
-                }
+            if (!whiteClock.isAlive()) {
 
-        } catch (Exception ignored) {
-            // Handle the exception appropriately
-        }
+                 blackClock.suspend();
+            } else {
+                 blackClock.suspend();
+                 whiteClock.resume();
+            }
+
+            lastRunning = whiteClock;
+        } catch (Exception ignored) {}
     }
 
-    public String getWhiteClockTime(){
-        return Utils.formatTime(whiteClock.getTimeLeft());
-    }
-    public String getBlackClockTime(){
-        return Utils.formatTime(blackClock.getTimeLeft());
+    public void gameStart(){
+        matchTimer.start();
+        whiteClock.start();
     }
 }

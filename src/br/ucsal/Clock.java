@@ -25,20 +25,11 @@ public class Clock extends Thread  {
             }
             timeLeft -= 1;
         }
-
     }
     public boolean hasTimeLeft() {
         return this.timeLeft > 0 ;
     }
     public long getTimeLeft() {
         return timeLeft;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public boolean isExpired() {
-        return expired;
     }
 }

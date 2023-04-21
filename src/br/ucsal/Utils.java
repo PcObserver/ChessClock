@@ -6,6 +6,6 @@ public class Utils {
         long minutes = time / 60;
         long seconds = time % 60;
 
-        return minutes + ":" + seconds;
+        return minutes + ":" + String.format("%02d", seconds);
     }
 }
